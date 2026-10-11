@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Notebooks / OS / editors
+.ipynb_checkpoints/
+.DS_Store
+.idea/
+.vscode/
+
+# FermiNet run outputs (large, reproducible)
+runs/
+qmcjax_ckpt_*.npz

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aeolus"
+version = "0.1.0"
+description = "FermiNet-based electron density datasets and a 3D viewer"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy", "pandas"]
+
+[project.optional-dependencies]
+# Loading FermiNet checkpoints unpickles JAX arrays, so the dataset builder needs JAX.
+checkpoints = ["jax"]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

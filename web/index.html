@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AEOLUS | Hydrogen electron density</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Hydrogen, sampled by FermiNet</h1>
+    <p>Each point is one electron position drawn from the trained wavefunction. Drag to rotate, scroll to zoom, and use the controls to cut into the cloud.</p>
+  </header>
+
+  <p id="error" class="error" hidden></p>
+
+  <div class="layout">
+    <div class="panel stage"><div id="cloud" role="img" aria-label="Interactive 3D scatter plot of sampled electron positions around a hydrogen nucleus"></div></div>
+
+    <div class="side">
+      <section class="panel controls" aria-label="Controls">
+        <h2>Controls</h2>
+        <div class="field">
+          <label for="snap">Samples from</label>
+          <select id="snap"></select>
+        </div>
+        <div class="field">
+          <div class="row"><label for="rmax">Show walkers within</label><span id="rmaxv"></span></div>
+          <input id="rmax" type="range" min="0.5" max="6" step="0.1" value="6">
+        </div>
+        <div class="field">
+          <div class="row"><label for="size">Point size</label><span id="sizev"></span></div>
+          <input id="size" type="range" min="1.5" max="8" step="0.5" value="3.5">
+        </div>
+        <label class="check"><input id="cut" type="checkbox"><span>Cut away the half where y is positive</span></label>
+        <label class="check"><input id="spin" type="checkbox"><span>Rotate automatically</span></label>
+      </section>
+
+      <section class="panel hist" aria-label="Radial distribution">
+        <h2>Distance from the nucleus</h2>
+        <div id="radial"></div>
+        <div class="readout">
+          <div><b id="meanr">-</b><small>mean distance, bohr (exact 1.500)</small></div>
+          <div><b id="count">-</b><small>walkers shown</small></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
