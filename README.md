@@ -1,10 +1,48 @@
 # AEOLUS
 
-Electron density datasets from [FermiNet](https://github.com/google-deepmind/ferminet), with a 3D viewer.
+**Geometry-conditioned neural quantum Monte Carlo for ranking the stability of molecular conformers and tautomers.**
 
-The long-term goal is a molecular stability ranking tool: sample electron densities for several
-conformers of a molecule, then rank them by predicted energy. This repository is at the first step,
-a single hydrogen atom run end to end.
+## Abstract
+
+Modern drug discovery and materials design depend on computational methods to evaluate molecular stability
+before committing to costly laboratory synthesis. Researchers currently face a fundamental tradeoff: Density
+Functional Theory (DFT) is fast but can be unreliable, particularly in capturing electron correlation, while
+neural-network-based quantum Monte Carlo methods such as FermiNet solve the electronic Schrödinger equation
+directly, achieving high accuracy but requiring full re-optimization for every individual molecular geometry.
+This makes FermiNet accurate yet impractically slow when applied across the many conformers and tautomers a
+single candidate molecule can adopt.
+
+AEOLUS addresses this gap by extending FermiNet with a geometry-conditioned, E(3)-equivariant Graph Neural
+Network layer. Rather than training a separate model for each configuration, AEOLUS injects geometry-aware
+embeddings into FermiNet's electron representation, enabling a single trained model to evaluate energies across
+a continuous space of related molecular geometries. This preserves FermiNet's core physical guarantees
+(fermionic antisymmetry, rotational and translational equivariance, and correct electron-nucleus cusp
+behavior) while significantly reducing the computational cost of evaluating multiple conformers.
+
+The core output is a tool for ranking the relative stability of small-molecule conformers and tautomers at
+near-chemical accuracy, validated against coupled-cluster (CCSD(T)) reference calculations and benchmarked
+using QM7 for baseline correctness and GEOM/Platinum for conformer-specific evaluation. AEOLUS is positioned
+not as a replacement for existing discovery pipelines, but as a precision filtering step applied to a
+shortlist of promising candidates, reducing wasted synthesis effort on unstable structures.
+
+By advancing scientific computational infrastructure (SDG 9), supporting pharmaceutical research and
+development (SDG 3), and reducing resource waste in early-stage research (SDG 12), AEOLUS contributes to more
+efficient, sustainable, and accessible scientific discovery.
+
+## Key features
+
+- **Geometry-conditioned model.** An E(3)-equivariant graph neural network layer feeds geometry-aware
+  embeddings into FermiNet, so one trained model covers a continuous space of related geometries.
+- **Physical guarantees preserved.** Fermionic antisymmetry, rotational and translational equivariance, and
+  correct electron-nucleus cusp behavior.
+- **Stability ranking.** Relative stability of small-molecule conformers and tautomers at near-chemical
+  accuracy.
+- **Validation and benchmarks.** Coupled-cluster (CCSD(T)) references, QM7 for baseline correctness, and
+  GEOM and Platinum for conformer-specific evaluation.
+- **A precision filtering step.** Applied to a shortlist of candidates, not a replacement for existing
+  discovery pipelines.
+
+The features above describe the project's goals. See Status for what exists today.
 
 ![Target UI (illustrative mockup, values are not real results)](docs/aeolus_ui_mockup.png)
 
@@ -17,15 +55,22 @@ a single hydrogen atom run end to end.
 | Hydrogen atom trained with FermiNet (CPU, 20,000 steps) | done |
 | Energy vs the exact -0.5 Eh | offset 1.4e-6 +- 1.0e-6 Eh (steps 5,000 to 20,000) |
 | Interactive 3D viewer of sampled positions | done, in `web/` |
+| First conformer pair (formic acid, Z and E) | configs ready; short pipeline test only |
 | FermiNet observables (spin, dipole, density) | not computed yet |
-| Molecules, conformer ranking, GNN training | planned |
+| Geometry-conditioned E(3)-equivariant GNN layer | planned |
+| Validation against CCSD(T) | planned |
+| Benchmarks on QM7, GEOM and Platinum | planned |
+| Conformer and tautomer stability ranking tool | planned |
 
 The sampled electron positions also agree with the exact hydrogen 1s distribution: mean distance from
 the nucleus 1.528 bohr against the exact 1.5.
 
 ## Try the viewer
 
-The viewer loads a JSON file, so serve the folder instead of opening `index.html` directly:
+Live demo: https://victorprototype.github.io/AEOLUS/
+
+The development viewer in `web/` loads a JSON file, so serve that folder instead of opening `web/index.html`
+directly:
 
 ```
 cd web
@@ -33,13 +78,15 @@ python -m http.server
 # open http://localhost:8000
 ```
 
-With GitHub Pages enabled (Settings, Pages, Source: GitHub Actions), the workflow in
-`.github/workflows/pages.yml` publishes `web/` on every push to `main`.
+The live page is the self-contained `index.html` at the repository root, served by GitHub Pages (deploy from
+branch `main`, folder `/ (root)`). Regenerate it from `web/` and the dataset with
+`python -m aeolus.build_site`.
 
 ## Layout
 
 ```
 aeolus/
+  index.html                self-contained page served by GitHub Pages (generated by aeolus.build_site)
   web/                      static viewer (HTML, CSS, JS, Plotly from a CDN)
     index.html
     css/style.css
@@ -48,6 +95,7 @@ aeolus/
   src/aeolus/
     dataset.py              FermiNet run -> data/*.npz
     export_web.py           data/*.npz -> web/data/*.json
+    build_site.py           data/*.npz -> single self-contained index.html
   configs/hydrogen.py       FermiNet config for the hydrogen atom
   data/hydrogen_v0.npz      first dataset file (about 0.4 MB)
   docs/
@@ -57,6 +105,8 @@ aeolus/
 ```
 
 ## Reproduce the dataset
+
+Prebuilt file: https://github.com/victorprototype/AEOLUS/releases/download/v0.1.0/hydrogen_v0.npz
 
 1. Set up an environment and train hydrogen, following `docs/kaggle_setup.md`.
 2. Build the dataset file. Loading checkpoints needs JAX:

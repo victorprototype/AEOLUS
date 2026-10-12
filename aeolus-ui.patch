@@ -1,0 +1,200 @@
+diff --git a/index.html b/index.html
+index f746ec6..5b68956 100644
+--- a/index.html
++++ b/index.html
+@@ -3,7 +3,7 @@
+ <head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+-<title>AEOLUS | Hydrogen electron density</title>
++<title>AEOLUS | Molecular stability ranking with FermiNet</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+@@ -72,6 +72,22 @@ input[type="range"] { accent-color: var(--bars); }
+ .readout b { display: block; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+ .readout small { color: var(--muted); }
+ footer { margin-top: 18px; color: var(--muted); font-size: 13px; max-width: 80ch; }
++/* About section */
++.tagline { font-size: 17px; color: var(--muted); margin: 0; max-width: 60ch; }
++.about { margin: 0 0 40px; }
++.section { font-family: "Newsreader", Georgia, "Times New Roman", serif; font-weight: 600; font-size: 24px; line-height: 1.2; margin: 0 0 12px; }
++.section-note { color: var(--muted); max-width: 62ch; margin: 0 0 18px; }
++.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 18px 0; }
++.feature { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
++.feature h3 { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
++.feature p { margin: 0; color: var(--muted); }
++.sdg { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 14px 0 0; }
++.sdg li { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; color: var(--muted); }
++.status { border-left: 3px solid var(--nucleus); padding: 6px 0 6px 14px; margin: 18px 0 0; max-width: 80ch; }
++details.abstract { margin-top: 14px; max-width: 80ch; }
++details.abstract summary { cursor: pointer; font-weight: 500; }
++details.abstract p { color: var(--muted); }
++
+ @media (max-width: 860px) {
+   .layout { grid-template-columns: minmax(0, 1fr); }
+   #cloud { height: 420px; }
+@@ -82,10 +98,59 @@ footer { margin-top: 18px; color: var(--muted); font-size: 13px; max-width: 80ch
+ <body>
+ <div class="wrap">
+   <header>
+-    <h1>Hydrogen, sampled by FermiNet</h1>
+-    <p>Each point is one electron position drawn from the trained wavefunction. Drag to rotate, scroll to zoom, and use the controls to cut into the cloud.</p>
++    <h1>AEOLUS</h1>
++    <p class="tagline">Geometry-conditioned neural quantum Monte Carlo for ranking the stability of molecular conformers and tautomers.</p>
+   </header>
+ 
++  <section class="about" aria-labelledby="about-title">
++    <h2 id="about-title" class="section">Why AEOLUS</h2>
++    <div class="features">
++      <article class="feature">
++        <h3>Accuracy without the cost per geometry</h3>
++        <p>Density Functional Theory is fast but can be unreliable, particularly for electron correlation. FermiNet solves the electronic Schr&ouml;dinger equation directly and is highly accurate, but it needs a full re-optimization for every molecular geometry.</p>
++      </article>
++      <article class="feature">
++        <h3>Geometry-conditioned GNN layer</h3>
++        <p>AEOLUS extends FermiNet with an E(3)-equivariant graph neural network that injects geometry-aware embeddings into the electron representation, so one trained model can evaluate energies across a continuous space of related geometries.</p>
++      </article>
++      <article class="feature">
++        <h3>Physical guarantees preserved</h3>
++        <p>Fermionic antisymmetry, rotational and translational equivariance, and correct electron-nucleus cusp behavior are kept, while the cost of evaluating many conformers drops.</p>
++      </article>
++      <article class="feature">
++        <h3>Stability ranking</h3>
++        <p>The output is a tool for ranking the relative stability of small-molecule conformers and tautomers at near-chemical accuracy.</p>
++      </article>
++      <article class="feature">
++        <h3>Validation and benchmarks</h3>
++        <p>Validated against coupled-cluster (CCSD(T)) reference calculations, with QM7 for baseline correctness and GEOM and Platinum for conformer-specific evaluation.</p>
++      </article>
++      <article class="feature">
++        <h3>A precision filtering step</h3>
++        <p>Applied to a shortlist of promising candidates, not as a replacement for existing discovery pipelines, to reduce wasted synthesis effort on unstable structures.</p>
++      </article>
++    </div>
++
++    <ul class="sdg" aria-label="Sustainable Development Goals">
++      <li>SDG 9: Industry, innovation and infrastructure</li>
++      <li>SDG 3: Good health and well-being</li>
++      <li>SDG 12: Responsible consumption and production</li>
++    </ul>
++
++    <p class="status"><strong>Project status.</strong> AEOLUS is in early development. The viewer below shows the first milestone, a hydrogen atom trained with FermiNet. The geometry-conditioned GNN, the conformer ranking and the benchmarks described above are planned work.</p>
++
++    <details class="abstract">
++      <summary>Read the full abstract</summary>
++      <p>Modern drug discovery and materials design depend on computational methods to evaluate molecular stability before committing to costly laboratory synthesis. Researchers currently face a fundamental tradeoff: Density Functional Theory (DFT) is fast but can be unreliable, particularly in capturing electron correlation, while neural-network-based quantum Monte Carlo methods such as FermiNet solve the electronic Schr&ouml;dinger equation directly, achieving high accuracy but requiring full re-optimization for every individual molecular geometry. This makes FermiNet accurate yet impractically slow when applied across the many conformers and tautomers a single candidate molecule can adopt.</p>
++      <p>AEOLUS addresses this gap by extending FermiNet with a geometry-conditioned, E(3)-equivariant Graph Neural Network layer. Rather than training a separate model for each configuration, AEOLUS injects geometry-aware embeddings into FermiNet's electron representation, enabling a single trained model to evaluate energies across a continuous space of related molecular geometries. This preserves FermiNet's core physical guarantees &mdash; fermionic antisymmetry, rotational and translational equivariance, and correct electron-nucleus cusp behavior &mdash; while significantly reducing the computational cost of evaluating multiple conformers.</p>
++      <p>The core output is a tool for ranking the relative stability of small-molecule conformers and tautomers at near-chemical accuracy, validated against coupled-cluster (CCSD(T)) reference calculations and benchmarked using QM7 for baseline correctness and GEOM/Platinum for conformer-specific evaluation. AEOLUS is positioned not as a replacement for existing discovery pipelines, but as a precision filtering step applied to a shortlist of promising candidates, reducing wasted synthesis effort on unstable structures.</p>
++      <p>By advancing scientific computational infrastructure (SDG 9), supporting pharmaceutical research and development (SDG 3), and reducing resource waste in early-stage research (SDG 12), AEOLUS contributes to more efficient, sustainable, and accessible scientific discovery.</p>
++    </details>
++  </section>
++
++  <h2 class="section">First milestone: hydrogen atom</h2>
++  <p class="section-note">Each point is one electron position drawn from a FermiNet wavefunction trained on hydrogen. Drag to rotate, scroll to zoom, and use the controls to cut into the cloud.</p>
++
+   <p id="error" class="error" hidden></p>
+ 
+   <div class="layout">
+diff --git a/web/css/style.css b/web/css/style.css
+index 4193a1e..2f2d70a 100644
+--- a/web/css/style.css
++++ b/web/css/style.css
+@@ -62,6 +62,22 @@ input[type="range"] { accent-color: var(--bars); }
+ .readout b { display: block; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+ .readout small { color: var(--muted); }
+ footer { margin-top: 18px; color: var(--muted); font-size: 13px; max-width: 80ch; }
++/* About section */
++.tagline { font-size: 17px; color: var(--muted); margin: 0; max-width: 60ch; }
++.about { margin: 0 0 40px; }
++.section { font-family: "Newsreader", Georgia, "Times New Roman", serif; font-weight: 600; font-size: 24px; line-height: 1.2; margin: 0 0 12px; }
++.section-note { color: var(--muted); max-width: 62ch; margin: 0 0 18px; }
++.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 18px 0; }
++.feature { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
++.feature h3 { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
++.feature p { margin: 0; color: var(--muted); }
++.sdg { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 14px 0 0; }
++.sdg li { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; color: var(--muted); }
++.status { border-left: 3px solid var(--nucleus); padding: 6px 0 6px 14px; margin: 18px 0 0; max-width: 80ch; }
++details.abstract { margin-top: 14px; max-width: 80ch; }
++details.abstract summary { cursor: pointer; font-weight: 500; }
++details.abstract p { color: var(--muted); }
++
+ @media (max-width: 860px) {
+   .layout { grid-template-columns: minmax(0, 1fr); }
+   #cloud { height: 420px; }
+diff --git a/web/index.html b/web/index.html
+index 687d68c..a9be84e 100644
+--- a/web/index.html
++++ b/web/index.html
+@@ -3,7 +3,7 @@
+ <head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+-<title>AEOLUS | Hydrogen electron density</title>
++<title>AEOLUS | Molecular stability ranking with FermiNet</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+@@ -12,10 +12,59 @@
+ <body>
+ <div class="wrap">
+   <header>
+-    <h1>Hydrogen, sampled by FermiNet</h1>
+-    <p>Each point is one electron position drawn from the trained wavefunction. Drag to rotate, scroll to zoom, and use the controls to cut into the cloud.</p>
++    <h1>AEOLUS</h1>
++    <p class="tagline">Geometry-conditioned neural quantum Monte Carlo for ranking the stability of molecular conformers and tautomers.</p>
+   </header>
+ 
++  <section class="about" aria-labelledby="about-title">
++    <h2 id="about-title" class="section">Why AEOLUS</h2>
++    <div class="features">
++      <article class="feature">
++        <h3>Accuracy without the cost per geometry</h3>
++        <p>Density Functional Theory is fast but can be unreliable, particularly for electron correlation. FermiNet solves the electronic Schr&ouml;dinger equation directly and is highly accurate, but it needs a full re-optimization for every molecular geometry.</p>
++      </article>
++      <article class="feature">
++        <h3>Geometry-conditioned GNN layer</h3>
++        <p>AEOLUS extends FermiNet with an E(3)-equivariant graph neural network that injects geometry-aware embeddings into the electron representation, so one trained model can evaluate energies across a continuous space of related geometries.</p>
++      </article>
++      <article class="feature">
++        <h3>Physical guarantees preserved</h3>
++        <p>Fermionic antisymmetry, rotational and translational equivariance, and correct electron-nucleus cusp behavior are kept, while the cost of evaluating many conformers drops.</p>
++      </article>
++      <article class="feature">
++        <h3>Stability ranking</h3>
++        <p>The output is a tool for ranking the relative stability of small-molecule conformers and tautomers at near-chemical accuracy.</p>
++      </article>
++      <article class="feature">
++        <h3>Validation and benchmarks</h3>
++        <p>Validated against coupled-cluster (CCSD(T)) reference calculations, with QM7 for baseline correctness and GEOM and Platinum for conformer-specific evaluation.</p>
++      </article>
++      <article class="feature">
++        <h3>A precision filtering step</h3>
++        <p>Applied to a shortlist of promising candidates, not as a replacement for existing discovery pipelines, to reduce wasted synthesis effort on unstable structures.</p>
++      </article>
++    </div>
++
++    <ul class="sdg" aria-label="Sustainable Development Goals">
++      <li>SDG 9: Industry, innovation and infrastructure</li>
++      <li>SDG 3: Good health and well-being</li>
++      <li>SDG 12: Responsible consumption and production</li>
++    </ul>
++
++    <p class="status"><strong>Project status.</strong> AEOLUS is in early development. The viewer below shows the first milestone, a hydrogen atom trained with FermiNet. The geometry-conditioned GNN, the conformer ranking and the benchmarks described above are planned work.</p>
++
++    <details class="abstract">
++      <summary>Read the full abstract</summary>
++      <p>Modern drug discovery and materials design depend on computational methods to evaluate molecular stability before committing to costly laboratory synthesis. Researchers currently face a fundamental tradeoff: Density Functional Theory (DFT) is fast but can be unreliable, particularly in capturing electron correlation, while neural-network-based quantum Monte Carlo methods such as FermiNet solve the electronic Schr&ouml;dinger equation directly, achieving high accuracy but requiring full re-optimization for every individual molecular geometry. This makes FermiNet accurate yet impractically slow when applied across the many conformers and tautomers a single candidate molecule can adopt.</p>
++      <p>AEOLUS addresses this gap by extending FermiNet with a geometry-conditioned, E(3)-equivariant Graph Neural Network layer. Rather than training a separate model for each configuration, AEOLUS injects geometry-aware embeddings into FermiNet's electron representation, enabling a single trained model to evaluate energies across a continuous space of related molecular geometries. This preserves FermiNet's core physical guarantees &mdash; fermionic antisymmetry, rotational and translational equivariance, and correct electron-nucleus cusp behavior &mdash; while significantly reducing the computational cost of evaluating multiple conformers.</p>
++      <p>The core output is a tool for ranking the relative stability of small-molecule conformers and tautomers at near-chemical accuracy, validated against coupled-cluster (CCSD(T)) reference calculations and benchmarked using QM7 for baseline correctness and GEOM/Platinum for conformer-specific evaluation. AEOLUS is positioned not as a replacement for existing discovery pipelines, but as a precision filtering step applied to a shortlist of promising candidates, reducing wasted synthesis effort on unstable structures.</p>
++      <p>By advancing scientific computational infrastructure (SDG 9), supporting pharmaceutical research and development (SDG 3), and reducing resource waste in early-stage research (SDG 12), AEOLUS contributes to more efficient, sustainable, and accessible scientific discovery.</p>
++    </details>
++  </section>
++
++  <h2 class="section">First milestone: hydrogen atom</h2>
++  <p class="section-note">Each point is one electron position drawn from a FermiNet wavefunction trained on hydrogen. Drag to rotate, scroll to zoom, and use the controls to cut into the cloud.</p>
++
+   <p id="error" class="error" hidden></p>
+ 
+   <div class="layout">
